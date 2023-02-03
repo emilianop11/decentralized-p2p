@@ -82,6 +82,4 @@ describe('Helper', function () {
       expect(parsedOpsForAddres4[0].state).to.equal(1)
     });
   });
-
-  
 });
