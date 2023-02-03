@@ -33,18 +33,22 @@ describe('Helper', function () {
   });
   
   describe('transfer', function () {
-    it('should check transfers', async function () {
+    it('should check transfers when operation was created by owner', async function () {
 
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(1000);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
-      await paymentsContract.connect(owner).create(wallet1.address, wallet2.address, 100, "anything");
+      // this is passing wallet3 as sender. we need to check that its not taken into consideration
+      await paymentsContract.connect(wallet1).create(wallet3.address, wallet2.address, 100, "anything");
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
+      // above we can effectively see that the amount was discounted from wallet1
 
       const opsForAddress1 = await paymentsContract.connect(wallet1).getOperationsForAddress();
       const parsedOpsForAddres1 = ParseSolidityStruct(opsForAddress1)
       expect(parsedOpsForAddres1).to.eql([
-        {"operationId":1,
+        {
+        "createdAt": parsedOpsForAddres1[0].createdAt,
+        "operationId":1,
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,
@@ -60,6 +64,58 @@ describe('Helper', function () {
       const parsedOpsForAddres2 = ParseSolidityStruct(opsForAddress2)
       expect(parsedOpsForAddres2).to.eql([
         {"operationId":1,
+        "createdAt": parsedOpsForAddres2[0].createdAt,
+        "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "amount":100,
+        "recipientData":"anything",
+        "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
+        "state":0,
+        "associatedChat":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"]}])
+      expect(parsedOpsForAddres2[0].sender).to.equal(wallet1.address)
+      expect(parsedOpsForAddres2[0].receiver).to.equal(wallet2.address)
+      expect(parsedOpsForAddres2[0].state).to.equal(0)
+        
+      await expect(paymentsContract.connect(wallet1).completeOperation(1)).to.be.revertedWith("operation can only be completed by receiver of the funds");
+      const opsForAddress3 = await paymentsContract.connect(wallet1).getOperationsForAddress();
+      const parsedOpsForAddres3 = ParseSolidityStruct(opsForAddress3)
+      expect(parsedOpsForAddres3[0].state).to.equal(0)
+
+      await paymentsContract.connect(wallet2).completeOperation(1)
+      const opsForAddress4 = await paymentsContract.connect(wallet1).getOperationsForAddress();
+      const parsedOpsForAddres4 = ParseSolidityStruct(opsForAddress4)
+      expect(parsedOpsForAddres4[0].state).to.equal(1)
+    });
+
+    it('should check transfers when operation was created by owner', async function () {
+
+      expect(await anyToken.balanceOf(wallet1.address)).to.equal(1000);
+      expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
+      await paymentsContract.connect(owner).create(wallet1.address, wallet2.address, 100, "anything");
+      expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
+      expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
+
+      const opsForAddress1 = await paymentsContract.connect(wallet1).getOperationsForAddress();
+      const parsedOpsForAddres1 = ParseSolidityStruct(opsForAddress1)
+      expect(parsedOpsForAddres1).to.eql([
+        {"operationId":1,
+        "createdAt": parsedOpsForAddres1[0].createdAt,
+        "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "amount":100,
+        "recipientData":"anything",
+        "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
+        "state":0,
+        "associatedChat":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"]}])
+
+      expect(parsedOpsForAddres1[0].sender).to.equal(wallet1.address)
+      expect(parsedOpsForAddres1[0].receiver).to.equal(wallet2.address)
+      expect(parsedOpsForAddres1[0].state).to.equal(0)
+      const opsForAddress2 = await paymentsContract.connect(wallet2).getOperationsForAddress();
+      const parsedOpsForAddres2 = ParseSolidityStruct(opsForAddress2)
+      expect(parsedOpsForAddres2).to.eql([
+        {"operationId":1,
+        "createdAt": parsedOpsForAddres2[0].createdAt,
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,

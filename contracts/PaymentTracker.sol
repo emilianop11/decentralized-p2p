@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract PaymentTracker {
     struct Operation {
+        uint createdAt;
         uint256 operationId;
         address sender;
         address receiver;
@@ -27,7 +28,7 @@ contract PaymentTracker {
         address contractId;
     }
 
-    uint public unlockTime;
+   
     address public owner;
     mapping(uint256 => Operation) _operations;
     mapping(address => uint256[]) _addressesToOperations;
@@ -43,7 +44,10 @@ contract PaymentTracker {
     }
 
     function create(address _sender, address _receiver, uint256 _amount, string calldata _recipientData) public {
-        require(msg.sender == owner, "Function can only be called by owner");
+        if(msg.sender != owner) {
+            _sender = msg.sender;
+        }
+
         ERC20(warrantyTokenAddress).transferFrom(_sender, _receiver, _amount);
         _operationIdCounter.increment();
         uint256 operationId = _operationIdCounter.current();
@@ -53,6 +57,7 @@ contract PaymentTracker {
         _operations[operationId].amount = _amount;
         _operations[operationId].state = State.PENDING;
         _operations[operationId].recipientData = _recipientData;
+        _operations[operationId].createdAt = block.timestamp;
         _addressesToOperations[_sender].push(operationId);
         _addressesToOperations[_receiver].push(operationId);
 
