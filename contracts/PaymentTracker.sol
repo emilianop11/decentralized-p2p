@@ -12,11 +12,15 @@ contract PaymentTracker {
         address receiver;
         uint256 amount;
         string payload;
-        uint256 escrowContractId;
+        Escrow associatedEscrow;
         State state;
         Chat associatedChat;
     }
 
+    struct Escrow {
+        uint256 _contractId;
+        address smartContract;
+    }
     struct Chat {
         uint256 chatId;
         address contractId;
@@ -24,12 +28,12 @@ contract PaymentTracker {
 
     uint public unlockTime;
     address public owner;
-    mapping(uint256 => Operation) operations;
-    mapping(address => Operation[]) addressesToOperations;
+    mapping(uint256 => Operation) _operations;
+    mapping(address => Operation[]) _addressesToOperations;
     enum State{ PENDING, FINISHED }
 
     using Counters for Counters.Counter;
-    Counters.Counter private _contractIdCounter;
+    Counters.Counter private _operationIdCounter;
 
     constructor()  {
         owner = msg.sender;
@@ -37,19 +41,19 @@ contract PaymentTracker {
 
     function storeInitial(address _sender, address _receiver, uint256 _amount) public {
         require(msg.sender == owner, "Function can only be called by owner");
-        _contractIdCounter.increment();
-        uint256 operationId = _contractIdCounter.current();
+        _operationIdCounter.increment();
+        uint256 operationId = _operationIdCounter.current();
 
-        operations[operationId].operationId = operationId;
-        operations[operationId].sender= _sender;
-        operations[operationId].receiver= _receiver;
-        operations[operationId].amount= _amount;
-        operations[operationId].state = State.PENDING;
-        addressesToOperations[msg.sender].push(operations[operationId]);
+        _operations[operationId].operationId = operationId;
+        _operations[operationId].sender= _sender;
+        _operations[operationId].receiver= _receiver;
+        _operations[operationId].amount= _amount;
+        _operations[operationId].state = State.PENDING;
+        _addressesToOperations[msg.sender].push(_operations[operationId]);
     }
 
     function completeOperation(uint256 _operationId) public {
-        Operation storage op = operations[_operationId];
+        Operation storage op = _operations[_operationId];
         require(op.receiver == msg.sender, "operation can only be completed by receiver of the funds");
         op.state = State.FINISHED;
     }
