@@ -31,16 +31,71 @@ describe('Helper', function () {
       5000
     );
   });
+  describe('offers', function () {
+    it('should create offer', async function () {
+      await paymentsContract.connect(wallet1).createOffer(
+        0, 1000, 1000, "banco nacion"
+      );
+
+      const offers1 = await paymentsContract.connect(wallet1).getOffersForAddress();
+      expect(ParseSolidityStruct(offers1)).to.eql([
+        {
+          "counterParty": "0x0000000000000000000000000000000000000000",
+          "createdAt": ParseSolidityStruct(offers1)[0].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 1000,
+          "minAmount": 1000,
+          "offerId": 1,
+          "opType": 0,
+          "operationId": 0,
+          "paymentMethod": "banco nacion"
+        }
+      ])
+
+      await paymentsContract.connect(wallet1).createOffer(
+        1, 1000, 10000, "banco nacion"
+      );
+
+      const offers2 = await paymentsContract.connect(wallet1).getOffersForAddress();
+      expect(ParseSolidityStruct(offers2)).to.eql([
+        {
+          "counterParty": "0x0000000000000000000000000000000000000000",
+          "createdAt": ParseSolidityStruct(offers2)[0].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 1000,
+          "minAmount": 1000,
+          "offerId": 1,
+          "opType": 0,
+          "operationId": 0,
+          "paymentMethod": "banco nacion"
+        },
+        {
+          "counterParty": "0x0000000000000000000000000000000000000000",
+          "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 10000,
+          "minAmount": 1000,
+          "offerId": 2,
+          "opType": 1,
+          "operationId": 0,
+          "paymentMethod": "banco nacion"
+        }
+      ])
+
+    })
+  });
   
-  describe('transfer', function () {
-    it('should check transfers when operation was created by owner', async function () {
+  describe('operations', function () {
+    it('should check transfers when operation was not created created by owner', async function () {
 
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(1000);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
+      expect(await anyToken.balanceOf(wallet3.address)).to.equal(1000);
       // this is passing wallet3 as sender. we need to check that its not taken into consideration
-      await paymentsContract.connect(wallet1).create(wallet3.address, wallet2.address, 100, "anything");
+      await paymentsContract.connect(wallet1).createOperation(wallet3.address, wallet2.address, 100, "anything");
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
+      expect(await anyToken.balanceOf(wallet3.address)).to.equal(1000);
       // above we can effectively see that the amount was discounted from wallet1
 
       const opsForAddress1 = await paymentsContract.connect(wallet1).getOperationsForAddress();
@@ -91,7 +146,7 @@ describe('Helper', function () {
 
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(1000);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
-      await paymentsContract.connect(owner).create(wallet1.address, wallet2.address, 100, "anything");
+      await paymentsContract.connect(owner).createOperation(wallet1.address, wallet2.address, 100, "anything");
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
 

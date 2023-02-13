@@ -7,6 +7,20 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // import "hardhat/console.sol";
 
 contract PaymentTracker {
+    enum OperationType{ SELL_CRYPTO, BUY_CRYPTO }
+
+    struct Offer {
+        uint createdAt;
+        address createdBy;
+        address counterParty;
+        uint256 offerId;
+        OperationType opType;
+        uint256 maxAmount;
+        uint256 minAmount;
+        string paymentMethod;
+        uint256 operationId;
+    }
+
     struct Operation {
         uint createdAt;
         uint256 operationId;
@@ -28,22 +42,42 @@ contract PaymentTracker {
         address contractId;
     }
 
-   
     address public owner;
     mapping(uint256 => Operation) _operations;
+    mapping(uint256 => Offer) _offers;
     mapping(address => uint256[]) _addressesToOperations;
+    mapping(address => uint256[]) _addressesToOffers;
     address warrantyTokenAddress;
     enum State{ PENDING, FINISHED }
 
     using Counters for Counters.Counter;
     Counters.Counter private _operationIdCounter;
+    Counters.Counter private _offerIdCounter;
 
     constructor(address _warrantyTokenAddress)  {
         owner = msg.sender;
         warrantyTokenAddress = _warrantyTokenAddress;
     }
 
-    function create(address _sender, address _receiver, uint256 _amount, string calldata _recipientData) public {
+    function createOffer(
+        OperationType opType,
+        uint256 minAmount,
+        uint256 maxAmount,
+        string calldata paymentMethod
+    ) public {
+        _offerIdCounter.increment();
+        uint256 offerId = _offerIdCounter.current();
+        _offers[offerId].offerId = offerId;
+        _offers[offerId].createdAt = block.timestamp;
+        _offers[offerId].createdBy = msg.sender;
+        _offers[offerId].opType = opType;
+        _offers[offerId].maxAmount = maxAmount;
+        _offers[offerId].minAmount = minAmount;
+        _offers[offerId].paymentMethod = paymentMethod;
+        _addressesToOffers[msg.sender].push(offerId);
+    }
+
+    function createOperation(address _sender, address _receiver, uint256 _amount, string calldata _recipientData) public {
         if(msg.sender != owner) {
             _sender = msg.sender;
         }
@@ -78,5 +112,16 @@ contract PaymentTracker {
             operations[i] = cont;
         }
         return operations;
+    }
+
+    function getOffersForAddress() external view returns (Offer[] memory) {
+        uint256[] storage offerIds = _addressesToOffers[msg.sender];
+        Offer[] memory offers = new Offer[](offerIds.length);
+        for (uint i = 0; i < offerIds.length; i++) {
+            uint256 offerId = offerIds[i];
+            Offer storage op = _offers[offerId];
+            offers[i] = op;
+        }
+        return offers;
     }
 }

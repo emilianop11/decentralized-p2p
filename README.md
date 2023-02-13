@@ -13,7 +13,7 @@ npx hardhat run scripts/deploy.js
 ```
 
 
-payload will be a base64 encoded stringified json with this format
+recipientData payload will be a base64 encoded stringified json with this format
 {
     payloadHash: "md5 of unencrypted content"
     s: {
