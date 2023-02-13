@@ -40,14 +40,12 @@ describe('Helper', function () {
       const offers1 = await paymentsContract.connect(wallet1).getOffersForAddress();
       expect(ParseSolidityStruct(offers1)).to.eql([
         {
-          "counterParty": "0x0000000000000000000000000000000000000000",
           "createdAt": ParseSolidityStruct(offers1)[0].createdAt,
           "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "maxAmount": 1000,
           "minAmount": 1000,
-          "offerId": 1,
           "opType": 0,
-          "operationId": 0,
+          "offerId": 1,
           "paymentMethod": "banco nacion"
         }
       ])
@@ -59,25 +57,21 @@ describe('Helper', function () {
       const offers2 = await paymentsContract.connect(wallet1).getOffersForAddress();
       expect(ParseSolidityStruct(offers2)).to.eql([
         {
-          "counterParty": "0x0000000000000000000000000000000000000000",
           "createdAt": ParseSolidityStruct(offers2)[0].createdAt,
           "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "maxAmount": 1000,
           "minAmount": 1000,
           "offerId": 1,
           "opType": 0,
-          "operationId": 0,
           "paymentMethod": "banco nacion"
         },
         {
-          "counterParty": "0x0000000000000000000000000000000000000000",
           "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
           "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "maxAmount": 10000,
           "minAmount": 1000,
           "offerId": 2,
           "opType": 1,
-          "operationId": 0,
           "paymentMethod": "banco nacion"
         }
       ])
@@ -92,7 +86,7 @@ describe('Helper', function () {
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
       expect(await anyToken.balanceOf(wallet3.address)).to.equal(1000);
       // this is passing wallet3 as sender. we need to check that its not taken into consideration
-      await paymentsContract.connect(wallet1).createOperation(wallet3.address, wallet2.address, 100, "anything");
+      await paymentsContract.connect(wallet1).createOperation(wallet3.address, wallet2.address, 100, "anything", 0);
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
       expect(await anyToken.balanceOf(wallet3.address)).to.equal(1000);
@@ -107,6 +101,7 @@ describe('Helper', function () {
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,
+        "offerId": 0,
         "recipientData":"anything",
         "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
         "state":0,
@@ -123,6 +118,7 @@ describe('Helper', function () {
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,
+        "offerId": 0,
         "recipientData":"anything",
         "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
         "state":0,
@@ -146,7 +142,7 @@ describe('Helper', function () {
 
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(1000);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1000);
-      await paymentsContract.connect(owner).createOperation(wallet1.address, wallet2.address, 100, "anything");
+      await paymentsContract.connect(owner).createOperation(wallet1.address, wallet2.address, 100, "anything", 0);
       expect(await anyToken.balanceOf(wallet1.address)).to.equal(900);
       expect(await anyToken.balanceOf(wallet2.address)).to.equal(1100);
 
@@ -158,6 +154,7 @@ describe('Helper', function () {
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,
+        "offerId": 0,
         "recipientData":"anything",
         "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
         "state":0,
@@ -174,6 +171,7 @@ describe('Helper', function () {
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "amount":100,
+        "offerId": 0,
         "recipientData":"anything",
         "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
         "state":0,

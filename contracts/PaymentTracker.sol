@@ -12,18 +12,17 @@ contract PaymentTracker {
     struct Offer {
         uint createdAt;
         address createdBy;
-        address counterParty;
         uint256 offerId;
         OperationType opType;
         uint256 maxAmount;
         uint256 minAmount;
         string paymentMethod;
-        uint256 operationId;
     }
 
     struct Operation {
         uint createdAt;
         uint256 operationId;
+        uint256 offerId;
         address sender;
         address receiver;
         uint256 amount;
@@ -77,15 +76,17 @@ contract PaymentTracker {
         _addressesToOffers[msg.sender].push(offerId);
     }
 
-    function createOperation(address _sender, address _receiver, uint256 _amount, string calldata _recipientData) public {
+    function createOperation(address _sender, address _receiver, uint256 _amount, string calldata _recipientData, uint256 offerId) public {
         if(msg.sender != owner) {
             _sender = msg.sender;
         }
+        require(offerId == 0 || _offers[offerId].createdBy == _sender  || _offers[offerId].createdBy == _receiver, "offer is not associated to this sender address");
 
         ERC20(warrantyTokenAddress).transferFrom(_sender, _receiver, _amount);
         _operationIdCounter.increment();
         uint256 operationId = _operationIdCounter.current();
         _operations[operationId].operationId = operationId;
+        _operations[operationId].offerId = offerId;
         _operations[operationId].sender = _sender;
         _operations[operationId].receiver = _receiver;
         _operations[operationId].amount = _amount;
