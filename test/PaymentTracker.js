@@ -47,7 +47,11 @@ describe('Helper', function () {
           "minAmount": 500,
           "transactionType": SELL_CRYPTO,
           "offerId": 1,
-          "paymentMethod": "banco nacion"
+          "paymentMethod": "banco nacion",
+          "country": "",
+          "currency": "",
+          "exchangeRate": 0,
+          "isActive": true
         }
       ])
 
@@ -64,7 +68,11 @@ describe('Helper', function () {
           "minAmount": 500,
           "offerId": 1,
           "transactionType": SELL_CRYPTO,
-          "paymentMethod": "banco nacion"
+          "paymentMethod": "banco nacion",
+          "country": "",
+          "currency": "",
+          "exchangeRate": 0,
+          "isActive": true
         },
         {
           "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
@@ -73,7 +81,11 @@ describe('Helper', function () {
           "minAmount": 1000,
           "offerId": 2,
           "transactionType": BUY_CRYPTO,
-          "paymentMethod": "banco nacion"
+          "paymentMethod": "banco nacion",
+          "country": "",
+          "currency": "",
+          "exchangeRate": 0,
+          "isActive": true
         }
       ])
 

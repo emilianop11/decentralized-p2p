@@ -17,6 +17,10 @@ contract PaymentTracker {
         uint256 maxAmount;
         uint256 minAmount;
         string paymentMethod;
+        bool isActive;
+        uint256 exchangeRate;
+        string country;
+        string currency;
     }
 
     struct Transaction {
@@ -69,6 +73,7 @@ contract PaymentTracker {
         _offers[offerId].offerId = offerId;
         _offers[offerId].createdAt = block.timestamp;
         _offers[offerId].createdBy = msg.sender;
+        _offers[offerId].isActive = true;
         _offers[offerId].transactionType = transactionType;
         _offers[offerId].maxAmount = maxAmount;
         _offers[offerId].minAmount = minAmount;
