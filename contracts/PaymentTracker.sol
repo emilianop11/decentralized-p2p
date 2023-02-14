@@ -80,7 +80,19 @@ contract PaymentTracker {
         if(msg.sender != owner) {
             _sender = msg.sender;
         }
-        require(offerId == 0 || _offers[offerId].createdBy == _sender  || _offers[offerId].createdBy == _receiver, "offer is not associated to this sender address");
+
+        if (offerId != 0) {
+            require(_amount <= _offers[offerId].maxAmount && _amount >= _offers[offerId].minAmount, "amount must be within offer max and min");
+
+            if (_offers[offerId].transactionType == TransactionType.SELL_CRYPTO) {
+                require(_offers[offerId].createdBy == _sender,  "offer is of sell type, offer must have been created by sender");
+            }
+
+            if (_offers[offerId].transactionType == TransactionType.BUY_CRYPTO) {
+                require(_offers[offerId].createdBy == _receiver,  "offer is of buy type, offer must have been created by receiver");
+            }
+        }
+        
 
         ERC20(warrantyTokenAddress).transferFrom(_sender, _receiver, _amount);
         _transactionIdCounter.increment();

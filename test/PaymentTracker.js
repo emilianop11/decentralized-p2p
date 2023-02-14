@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const {ParseSolidityStruct} = require("solidity-struct-parser");
-
+const SELL_CRYPTO = 0;
+const BUY_CRYPTO = 1;
 describe('Helper', function () {
   beforeEach(async function() {
     [owner, wallet1, wallet2, wallet3, wallet4, walletHacker] = await ethers.getSigners();
@@ -34,7 +35,7 @@ describe('Helper', function () {
   describe('offers', function () {
     it('should create offer', async function () {
       await paymentsContract.connect(wallet1).createOffer(
-        0, 1000, 1000, "banco nacion"
+        SELL_CRYPTO, 500, 1000, "banco nacion"
       );
 
       const offers1 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -43,15 +44,15 @@ describe('Helper', function () {
           "createdAt": ParseSolidityStruct(offers1)[0].createdAt,
           "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "maxAmount": 1000,
-          "minAmount": 1000,
-          "transactionType": 0,
+          "minAmount": 500,
+          "transactionType": SELL_CRYPTO,
           "offerId": 1,
           "paymentMethod": "banco nacion"
         }
       ])
 
       await paymentsContract.connect(wallet1).createOffer(
-        1, 1000, 10000, "banco nacion"
+        BUY_CRYPTO, 1000, 10000, "banco nacion"
       );
 
       const offers2 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -60,9 +61,9 @@ describe('Helper', function () {
           "createdAt": ParseSolidityStruct(offers2)[0].createdAt,
           "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "maxAmount": 1000,
-          "minAmount": 1000,
+          "minAmount": 500,
           "offerId": 1,
-          "transactionType": 0,
+          "transactionType": SELL_CRYPTO,
           "paymentMethod": "banco nacion"
         },
         {
@@ -71,16 +72,19 @@ describe('Helper', function () {
           "maxAmount": 10000,
           "minAmount": 1000,
           "offerId": 2,
-          "transactionType": 1,
+          "transactionType": BUY_CRYPTO,
           "paymentMethod": "banco nacion"
         }
       ])
 
 
-      await expect(paymentsContract.connect(wallet3).createTransaction(wallet3.address, wallet4.address, 100, "anything", 1)).to.be.revertedWith("offer is not associated to this sender address");
+      await expect(paymentsContract.connect(wallet3).createTransaction(wallet3.address, wallet4.address, 1000, "anything", 1)).to.be.revertedWith("offer is of sell type, offer must have been created by sender");
 
-      await paymentsContract.connect(wallet1).createTransaction(wallet1.address, wallet4.address, 100, "anything", 1);
-      await paymentsContract.connect(wallet2).createTransaction(wallet2.address, wallet1.address, 100, "anything", 1);
+      await expect(paymentsContract.connect(wallet1).createTransaction(wallet1.address, wallet4.address, 100000, "anything", 1)).to.be.revertedWith("amount must be within offer max and min");
+      await expect(paymentsContract.connect(wallet2).createTransaction(wallet2.address, wallet1.address, 30, "anything", 2)).to.be.revertedWith("amount must be within offer max and min");
+
+      await paymentsContract.connect(wallet1).createTransaction(wallet1.address, wallet4.address, 1000, "anything", 1);
+      await paymentsContract.connect(wallet2).createTransaction(wallet2.address, wallet1.address, 1000, "anything", 2);
 
 
       const opsForAddress1 = await paymentsContract.connect(wallet1).getTransactionsForAddress();
@@ -91,7 +95,7 @@ describe('Helper', function () {
         "transactionId":1,
         "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
         "receiver":"0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
-        "amount":100,
+        "amount":1000,
         "offerId": 1,
         "recipientData":"anything",
         "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
@@ -102,8 +106,8 @@ describe('Helper', function () {
           "transactionId":2,
           "sender":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
           "receiver":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-          "amount":100,
-          "offerId": 1,
+          "amount":1000,
+          "offerId": 2,
           "recipientData":"anything",
           "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
           "state":0,
