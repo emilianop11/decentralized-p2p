@@ -66,11 +66,17 @@ contract PaymentTracker {
         TransactionType transactionType,
         uint256 minAmount,
         uint256 maxAmount,
+        uint256 exchangeRate,
+        string calldata country,
+        string calldata currency,
         string calldata paymentMethod
     ) public {
         _offerIdCounter.increment();
         uint256 offerId = _offerIdCounter.current();
         _offers[offerId].offerId = offerId;
+        _offers[offerId].exchangeRate = exchangeRate;
+        _offers[offerId].country = country;
+        _offers[offerId].currency = currency;
         _offers[offerId].createdAt = block.timestamp;
         _offers[offerId].createdBy = msg.sender;
         _offers[offerId].isActive = true;

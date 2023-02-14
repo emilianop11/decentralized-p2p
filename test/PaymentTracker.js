@@ -35,7 +35,7 @@ describe('Helper', function () {
   describe('offers', function () {
     it('should create offer', async function () {
       await paymentsContract.connect(wallet1).createOffer(
-        SELL_CRYPTO, 500, 1000, "banco nacion"
+        SELL_CRYPTO, 500, 1000, 32800, "argentina", "ARS", "banco nacion"
       );
 
       const offers1 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -48,15 +48,15 @@ describe('Helper', function () {
           "transactionType": SELL_CRYPTO,
           "offerId": 1,
           "paymentMethod": "banco nacion",
-          "country": "",
-          "currency": "",
-          "exchangeRate": 0,
+          "country": "argentina",
+          "currency": "ARS",
+          "exchangeRate": 32800,
           "isActive": true
         }
       ])
 
       await paymentsContract.connect(wallet1).createOffer(
-        BUY_CRYPTO, 1000, 10000, "banco nacion"
+        BUY_CRYPTO, 1000, 10000, 32800, "argentina", "ARS", "banco nacion"
       );
 
       const offers2 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -69,9 +69,9 @@ describe('Helper', function () {
           "offerId": 1,
           "transactionType": SELL_CRYPTO,
           "paymentMethod": "banco nacion",
-          "country": "",
-          "currency": "",
-          "exchangeRate": 0,
+          "country": "argentina",
+          "currency": "ARS",
+          "exchangeRate": 32800,
           "isActive": true
         },
         {
@@ -82,9 +82,9 @@ describe('Helper', function () {
           "offerId": 2,
           "transactionType": BUY_CRYPTO,
           "paymentMethod": "banco nacion",
-          "country": "",
-          "currency": "",
-          "exchangeRate": 0,
+          "country": "argentina",
+          "currency": "ARS",
+          "exchangeRate": 32800,
           "isActive": true
         }
       ])
