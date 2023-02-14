@@ -76,6 +76,40 @@ describe('Helper', function () {
         }
       ])
 
+
+      await expect(paymentsContract.connect(wallet3).createOperation(wallet3.address, wallet4.address, 100, "anything", 1)).to.be.revertedWith("offer is not associated to this sender address");
+
+      await paymentsContract.connect(wallet1).createOperation(wallet1.address, wallet4.address, 100, "anything", 1);
+      await paymentsContract.connect(wallet1).createOperation(wallet1.address, wallet2.address, 100, "anything", 1);
+
+
+      const opsForAddress1 = await paymentsContract.connect(wallet1).getOperationsForAddress();
+      const parsedOpsForAddres1 = ParseSolidityStruct(opsForAddress1)
+      expect(parsedOpsForAddres1).to.eql([
+        {
+        "createdAt": parsedOpsForAddres1[0].createdAt,
+        "operationId":1,
+        "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "receiver":"0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "amount":100,
+        "offerId": 1,
+        "recipientData":"anything",
+        "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
+        "state":0,
+        "associatedChat":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"]},
+        {
+          "createdAt": parsedOpsForAddres1[1].createdAt,
+          "operationId":2,
+          "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "amount":100,
+          "offerId": 1,
+          "recipientData":"anything",
+          "associatedEscrow":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"],
+          "state":0,
+          "associatedChat":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"]}
+      
+      ])
     })
   });
   
