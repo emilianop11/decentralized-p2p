@@ -62,6 +62,11 @@ contract PaymentTracker {
         warrantyTokenAddress = _warrantyTokenAddress;
     }
 
+    function deactivateOffer(uint256 offerId) public {
+        require(_offers[offerId].createdBy == msg.sender, "offer can only be deactived by creator");
+        _offers[offerId].isActive = false;
+    }
+
     function createOffer(
         TransactionType transactionType,
         uint256 minAmount,
@@ -93,6 +98,7 @@ contract PaymentTracker {
         }
 
         if (offerId != 0) {
+            require(_offers[offerId].isActive, "Offer must be active");
             require(_amount <= _offers[offerId].maxAmount && _amount >= _offers[offerId].minAmount, "amount must be within offer max and min");
 
             if (_offers[offerId].transactionType == TransactionType.SELL_CRYPTO) {

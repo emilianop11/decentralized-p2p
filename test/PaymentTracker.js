@@ -55,6 +55,8 @@ describe('Helper', function () {
         }
       ])
 
+      await expect(paymentsContract.connect(walletHacker).deactivateOffer(1)).to.be.revertedWith("offer can only be deactived by creator");
+
       await paymentsContract.connect(wallet1).createOffer(
         BUY_CRYPTO, 1000, 10000, 32800, "argentina", "ARS", "banco nacion"
       );
@@ -126,6 +128,11 @@ describe('Helper', function () {
           "associatedChat":[{"_hex":"0x00","_isBigNumber":true},"0x0000000000000000000000000000000000000000"]}
       
       ])
+
+
+      await paymentsContract.connect(wallet1).deactivateOffer(1);
+      await expect(paymentsContract.connect(wallet1).createTransaction(wallet2.address, wallet1.address, 30, "anything", 1)).to.be.revertedWith("Offer must be active");
+
     })
   });
   
