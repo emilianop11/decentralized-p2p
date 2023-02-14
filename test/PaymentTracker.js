@@ -80,7 +80,7 @@ describe('Helper', function () {
       await expect(paymentsContract.connect(wallet3).createTransaction(wallet3.address, wallet4.address, 100, "anything", 1)).to.be.revertedWith("offer is not associated to this sender address");
 
       await paymentsContract.connect(wallet1).createTransaction(wallet1.address, wallet4.address, 100, "anything", 1);
-      await paymentsContract.connect(wallet1).createTransaction(wallet1.address, wallet2.address, 100, "anything", 1);
+      await paymentsContract.connect(wallet2).createTransaction(wallet2.address, wallet1.address, 100, "anything", 1);
 
 
       const opsForAddress1 = await paymentsContract.connect(wallet1).getTransactionsForAddress();
@@ -100,8 +100,8 @@ describe('Helper', function () {
         {
           "createdAt": parsedOpsForAddres1[1].createdAt,
           "transactionId":2,
-          "sender":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-          "receiver":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "sender":"0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "receiver":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
           "amount":100,
           "offerId": 1,
           "recipientData":"anything",
