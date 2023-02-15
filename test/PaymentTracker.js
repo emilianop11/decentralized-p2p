@@ -41,6 +41,7 @@ describe('Helper', function () {
             country: "Argentina",
             exchangeRate: 328.10,
             paymentMethod: "wire transfer",
+            note: "anything",
             escrow: {
               cryptoBuyer: 2,
               cryptoSeller: 1
@@ -67,7 +68,8 @@ describe('Helper', function () {
               "cryptoSeller": 1
             },
             "exchangeRate": 328.1,
-            "paymentMethod": "wire transfer"
+            "paymentMethod": "wire transfer",
+            "note": "anything"
           }
         }
       ])
@@ -84,7 +86,8 @@ describe('Helper', function () {
             escrow: {
               cryptoBuyer: 2,
               cryptoSeller: 1
-            }
+            },
+            note: "anything"
           }
         )
       );
@@ -107,7 +110,8 @@ describe('Helper', function () {
               "cryptoSeller": 1
             },
             "exchangeRate": 328.1,
-            "paymentMethod": "wire transfer"
+            "paymentMethod": "wire transfer",
+            "note": "anything"
           }
         },
         {
@@ -126,7 +130,8 @@ describe('Helper', function () {
               "cryptoSeller": 1
             },
             "exchangeRate": 328.1,
-            "paymentMethod": "wire transfer"
+            "paymentMethod": "wire transfer",
+            "note": "anything"
           }
         }
       ])
