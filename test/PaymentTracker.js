@@ -35,7 +35,18 @@ describe('Helper', function () {
   describe('offers', function () {
     it('should create offer', async function () {
       await paymentsContract.connect(wallet1).createOffer(
-        SELL_CRYPTO, 500, 1000, 32800, "argentina", "ARS", "banco nacion"
+        SELL_CRYPTO, 500, 1000, JSON.stringify(
+          {
+            currency: "ARS",
+            country: "Argentina",
+            exchangeRate: 328.10,
+            paymentMethod: "wire transfer",
+            escrow: {
+              cryptoBuyer: 2,
+              cryptoSeller: 1
+            }
+          }
+        )
       );
 
       const offers1 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -47,18 +58,35 @@ describe('Helper', function () {
           "minAmount": 500,
           "transactionType": SELL_CRYPTO,
           "offerId": 1,
-          "paymentMethod": "banco nacion",
-          "country": "argentina",
-          "currency": "ARS",
-          "exchangeRate": 32800,
-          "isActive": true
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer"
+          }
         }
       ])
 
       await expect(paymentsContract.connect(walletHacker).deactivateOffer(1)).to.be.revertedWith("offer can only be deactived by creator");
 
       await paymentsContract.connect(wallet1).createOffer(
-        BUY_CRYPTO, 1000, 10000, 32800, "argentina", "ARS", "banco nacion"
+        BUY_CRYPTO, 1000, 10000, JSON.stringify(
+          {
+            currency: "ARS",
+            country: "Argentina",
+            exchangeRate: 328.10,
+            paymentMethod: "wire transfer",
+            escrow: {
+              cryptoBuyer: 2,
+              cryptoSeller: 1
+            }
+          }
+        )
       );
 
       const offers2 = await paymentsContract.connect(wallet1).getOffersForAddress();
@@ -70,11 +98,17 @@ describe('Helper', function () {
           "minAmount": 500,
           "offerId": 1,
           "transactionType": SELL_CRYPTO,
-          "paymentMethod": "banco nacion",
-          "country": "argentina",
-          "currency": "ARS",
-          "exchangeRate": 32800,
-          "isActive": true
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer"
+          }
         },
         {
           "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
@@ -83,11 +117,17 @@ describe('Helper', function () {
           "minAmount": 1000,
           "offerId": 2,
           "transactionType": BUY_CRYPTO,
-          "paymentMethod": "banco nacion",
-          "country": "argentina",
-          "currency": "ARS",
-          "exchangeRate": 32800,
-          "isActive": true
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer"
+          }
         }
       ])
 

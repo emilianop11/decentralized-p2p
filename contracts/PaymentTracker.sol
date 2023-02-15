@@ -16,11 +16,8 @@ contract PaymentTracker {
         TransactionType transactionType;
         uint256 maxAmount;
         uint256 minAmount;
-        string paymentMethod;
         bool isActive;
-        uint256 exchangeRate;
-        string country;
-        string currency;
+        string metadata;
     }
 
     struct Transaction {
@@ -71,24 +68,18 @@ contract PaymentTracker {
         TransactionType transactionType,
         uint256 minAmount,
         uint256 maxAmount,
-        uint256 exchangeRate,
-        string calldata country,
-        string calldata currency,
-        string calldata paymentMethod
+        string calldata metadata
     ) public {
         _offerIdCounter.increment();
         uint256 offerId = _offerIdCounter.current();
         _offers[offerId].offerId = offerId;
-        _offers[offerId].exchangeRate = exchangeRate;
-        _offers[offerId].country = country;
-        _offers[offerId].currency = currency;
         _offers[offerId].createdAt = block.timestamp;
         _offers[offerId].createdBy = msg.sender;
         _offers[offerId].isActive = true;
         _offers[offerId].transactionType = transactionType;
         _offers[offerId].maxAmount = maxAmount;
         _offers[offerId].minAmount = minAmount;
-        _offers[offerId].paymentMethod = paymentMethod;
+        _offers[offerId].metadata = metadata;
         _addressesToOffers[msg.sender].push(offerId);
     }
 
