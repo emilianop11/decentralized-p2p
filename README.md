@@ -10,6 +10,7 @@ npx hardhat test
 REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
+npx hardhat run scripts/deploy.js --network matic
 ```
 
 
@@ -31,4 +32,4 @@ used to make sure that the same string is being encrypted for both parties.
 "r" stands for receiver
 "p" stands for payload
 
-Polygon mainnet deployment 0x5FbDB2315678afecb367f032d93F642f64180aa3
+Polygon mainnet deployment 0x1B23817050813D916E20A2159B6AeF95eEd7100C
