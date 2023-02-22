@@ -30,3 +30,5 @@ used to make sure that the same string is being encrypted for both parties.
 "s" stands for sender
 "r" stands for receiver
 "p" stands for payload
+
+Polygon mainnet deployment 0x5FbDB2315678afecb367f032d93F642f64180aa3
