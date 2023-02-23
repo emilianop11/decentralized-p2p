@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
-contract PaymentTracker {
+contract P2P {
     enum TransactionType{ SELL_CRYPTO, BUY_CRYPTO }
 
     struct Offer {

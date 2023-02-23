@@ -7,7 +7,7 @@ describe('Helper', function () {
     [owner, wallet1, wallet2, wallet3, wallet4, walletHacker] = await ethers.getSigners();
     AnyToken = await ethers.getContractFactory('Any', owner);
     anyToken = await AnyToken.deploy();
-    PaymentsContract = await ethers.getContractFactory('PaymentTracker', owner);
+    PaymentsContract = await ethers.getContractFactory('P2P', owner);
     paymentsContract = await PaymentsContract.deploy(anyToken.address);
 
     anyToken.connect(owner).transfer(wallet1.address, 1000);

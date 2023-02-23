@@ -1,7 +1,7 @@
 //USDC 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174
 
 const main = async () => {
-  const helperContractFactory = await hre.ethers.getContractFactory('PaymentTracker');
+  const helperContractFactory = await hre.ethers.getContractFactory('P2P');
   const helperContract = await helperContractFactory.deploy("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174");
   await helperContract.deployed();
   console.log('Contract Address:', helperContract.address);
