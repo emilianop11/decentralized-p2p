@@ -136,6 +136,50 @@ describe('Helper', function () {
         }
       ])
 
+      const activeOps = await paymentsContract.connect(wallet4).getActiveOffers();
+    
+      expect(ParseSolidityStruct(activeOps)).to.eql([
+        {
+          "createdAt": ParseSolidityStruct(offers2)[0].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 1000,
+          "minAmount": 500,
+          "offerId": 1,
+          "transactionType": SELL_CRYPTO,
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer",
+            "note": "anything"
+          }
+        },
+        {
+          "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 10000,
+          "minAmount": 1000,
+          "offerId": 2,
+          "transactionType": BUY_CRYPTO,
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer",
+            "note": "anything"
+          }
+        }
+      ])
 
       await expect(paymentsContract.connect(wallet3).createTransaction(wallet3.address, wallet4.address, 1000, "anything", 1)).to.be.revertedWith("offer is of sell type, offer must have been created by sender");
 
@@ -178,6 +222,30 @@ describe('Helper', function () {
       await paymentsContract.connect(wallet1).deactivateOffer(1);
       await expect(paymentsContract.connect(wallet1).createTransaction(wallet2.address, wallet1.address, 30, "anything", 1)).to.be.revertedWith("Offer must be active");
 
+      const activeOps2 = await paymentsContract.connect(wallet4).getActiveOffers();
+    
+      expect(ParseSolidityStruct(activeOps2)).to.eql([
+        {
+          "createdAt": ParseSolidityStruct(offers2)[1].createdAt,
+          "createdBy": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "maxAmount": 10000,
+          "minAmount": 1000,
+          "offerId": 2,
+          "transactionType": BUY_CRYPTO,
+          "isActive": true,
+          "metadata": {
+            "country": "Argentina",
+            "currency": "ARS",
+            "escrow": {
+              "cryptoBuyer": 2,
+              "cryptoSeller": 1
+            },
+            "exchangeRate": 328.1,
+            "paymentMethod": "wire transfer",
+            "note": "anything"
+          }
+        }
+      ])
     })
   });
   

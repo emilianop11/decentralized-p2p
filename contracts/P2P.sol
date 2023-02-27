@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 // Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract P2P {
     enum TransactionType{ SELL_CRYPTO, BUY_CRYPTO }
@@ -143,6 +143,29 @@ contract P2P {
             Offer storage op = _offers[offerId];
             offers[i] = op;
         }
+        return offers;
+    }
+
+    function getActiveOffers() external view returns (Offer[] memory) {
+        uint256 maxOfferId = _offerIdCounter.current();
+        uint256 amountOfActiveOffers = 0;
+        for (uint i = 0; i < maxOfferId+1; i++) {
+            Offer storage op = _offers[i];
+            if (op.isActive) {
+                amountOfActiveOffers ++;
+            }
+        }
+
+        Offer[] memory offers = new Offer[](amountOfActiveOffers);
+        uint j = 0;
+        for (uint id = 0; id < maxOfferId+1; id++) {
+            Offer storage op = _offers[id];
+            if (op.isActive) {
+                offers[j] = op;
+                j ++;
+            }
+        }
+
         return offers;
     }
 }
